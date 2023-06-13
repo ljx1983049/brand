@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>正则表达式</title>
+</head>
+<body>
+
+<div id="app">
+
+<!--  第一个文本域  -->
+    <el-input
+            type="textarea"
+            :rows="15"
+            placeholder="请输入内容"
+            v-model="pipei.textarea">
+    </el-input>
+
+<!--  输入框  -->
+    <el-input v-model="pipei.input" placeholder="正则表达式"></el-input>
+
+<!--  按钮  -->
+    <el-button type="info" @click="piPei">匹配</el-button>
+    <el-button type="primary" @click="piPeiInt">匹配整数</el-button>
+    <el-button type="primary" @click="piPeiDouble">匹配小数</el-button>
+    <el-button type="primary" @click="piPeiNumberAanEnglish">数字与字母组成</el-button>
+    <el-button type="primary" @click="piPeiPassword">匹配密码</el-button>
+    <el-button type="danger" @click="replace">替换</el-button>
+
+    <!--  第二个文本域  -->
+    <el-input
+            type="textarea"
+            :rows="15"
+            placeholder="请输入内容"
+            v-model="textarea_tow">
+    </el-input>
+
+</div>
+
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+<script src="js/axios-0.18.0.js"></script>
+
+<script>
+  new Vue({
+    el:"#app",
+
+      methods:{
+        //正常匹配的方法
+        piPei(){
+            axios({
+                method:"post",
+                url:"http://localhost:8080/brand-case/regEx/piPei",
+                data: this.pipei
+            }).then(resp=>{
+                this.textarea_tow=resp.data
+            })
+        },
+          goAxios(){
+              axios({
+                  method:"post",
+                  url:"http://localhost:8080/brand-case/regEx/number",
+                  data: this.pipei
+              }).then(resp=>{
+                  if (resp.data=='success'){
+                      this.textarea_tow="匹配";
+
+                      this.$message({
+                          showClose: true,
+                          message: '匹配',
+                          type: 'success'
+                      });
+
+                  }else {
+                      this.textarea_tow="不匹配";
+
+                      this.$message({
+                          showClose: true,
+                          message: '不匹配',
+                          type: 'error'
+                      });
+
+                  }
+              })
+          },
+          //匹配整数
+        piPeiInt(){
+            this.pipei.input='([-+]?[1-9][0-9]*)|0';
+            this.goAxios()
+        },
+        //匹配小数
+          piPeiDouble(){
+              this.pipei.input='[-+]?(0|([1-9][0-9]*))[.][0-9]+';
+              this.goAxios()
+          },
+          //匹配数字和字母
+          piPeiNumberAanEnglish(){
+              this.pipei.input='(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+';
+              this.goAxios()
+          },
+          //匹配密码
+          piPeiPassword(){
+              this.pipei.input='[a-zA-Z](?=.*\\d)([a-zA-Z]*)(?=.*[_]).{7,9}';
+              this.goAxios()
+          },
+          //替换字符串的方法
+          replace() {
+              axios({
+                  method: "post",
+                  url: "http://localhost:8080/brand-case/regEx/replace?textarea_tow=" + this.textarea_tow,
+                  data: this.pipei
+              }).then(resp => {
+                  this.pipei.textarea = resp.data
+              })
+          }
+      },
+
+    data() {
+        return {
+            pipei: {
+                textarea: '',
+                input: '',
+            },
+            textarea_tow: ''
+        }
+    }
+
+
+  })
+</script>
+
+</body>
+</html>
