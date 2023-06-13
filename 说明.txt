@@ -1,7 +1,0 @@
-新版javaWeb基础教程综合案例
-
-使用：
-	ajax框架axios
-	vue
-	mybatis
-	Fastjson
